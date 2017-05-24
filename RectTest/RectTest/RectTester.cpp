@@ -9,14 +9,18 @@ vector<vector<Point>> RectTester::RecognizeAnswers(cv::Mat matToRecognize){
 //    Mat resizedImage = Mat(matToRecognize);
 //    cv::resize(matToRecognize, resizedImage, Size(800, 800*aspect));
     
-//    Mat blurImage = Mat(matToRecognize);
-//    GaussianBlur(matToRecognize, blurImage, Size(5,5), 0);
+    Mat blurImage = Mat(matToRecognize);
+    GaussianBlur(matToRecognize, blurImage, Size(5,5), 0);
+    //    medianBlur(matToRecognize, blurImage, 9);
     
     Mat grayImage;
-    cvtColor(matToRecognize, grayImage, CV_BGR2GRAY);
+    cvtColor(blurImage, grayImage, CV_BGR2GRAY);
     
     Mat mask;
-    threshold(grayImage, mask, 0, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
+    adaptiveThreshold(grayImage, mask,255,CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY,75,10);
+//    threshold(grayImage, mask, 0, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
+    
+//    dilate(mask, mask, Mat(), Point(-1,-1));
     
     vector<vector<Point>> contours;
     findContours(mask, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
@@ -25,9 +29,9 @@ vector<vector<Point>> RectTester::RecognizeAnswers(cv::Mat matToRecognize){
         
         vector<Point> approx = vector<Point>();
         double peri = arcLength(cnt, true);
-        if(peri < 300 || peri > 800) continue;
-        approxPolyDP(cnt, approx, 0.035 * peri, true);
-        if(approx.size() == 4){
+        if(peri < 350 || peri > 800) continue;
+        approxPolyDP(cnt, approx, 0.04 * peri, true);
+        if(approx.size() == 4 ){
             drawContours( matToRecognize, vector<vector<Point>>({approx}), 0, cv::Scalar(255, 0, 0), 3, 8, noArray(), 0, cv::Point() );
             rectContours.push_back(approx);
         }
