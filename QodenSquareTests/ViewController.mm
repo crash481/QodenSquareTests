@@ -4,6 +4,8 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <CoreMedia/CoreMedia.h>
+#include "opencv2/core.hpp"
+
 
 
 @interface ViewController ()
@@ -131,8 +133,11 @@
     cv::Mat cv_image((int) height, (int) width, CV_8UC4, pixel, bytesPerRow);
     
     if(!cv_image.empty()){
-        RectTester::RecognizeMarkers(cv_image);
-        RectTester::RecognizeAnswers(cv_image);
+        vector<vector<cv::Point2f>> markers = RectTester::RecognizeMarkers(cv_image);
+        if(markers.size() > 0){
+            cv::Rect2d markerRect = cv::Rect2d(markers[0][1],markers[0][3]);
+            RectTester::RecognizeAnswers(cv_image, markerRect);
+        }
     }
     CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
 }
