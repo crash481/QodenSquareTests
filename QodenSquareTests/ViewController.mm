@@ -20,8 +20,6 @@
     UITapGestureRecognizer *_doubleTap, *_singleTap;
 }
 
-RectTester rectTester = RectTester("");
-
 -(instancetype)init{
     if(self = [super init]){
         self.controllerView = [MainView new];
@@ -133,8 +131,8 @@ RectTester rectTester = RectTester("");
     cv::Mat cv_image((int) height, (int) width, CV_8UC4, pixel, bytesPerRow);
     
     if(!cv_image.empty()){
-        RectTester::getRecognizedMarkers(cv_image);
-        RectTester::getRecognizedMat(cv_image);
+        RectTester::RecognizeMarkers(cv_image);
+        RectTester::RecognizeAnswers(cv_image);
     }
     CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
 }

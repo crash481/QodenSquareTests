@@ -3,37 +3,7 @@
 using namespace std;
 using namespace cv;
 
-RectTester::RectTester(const std::string path){
-    imagePath = path;
-}
-
-vector<vector<Point>> RectTester::recognize() {
-    Mat image = imread(imagePath);
-    double aspect = (double)image.rows/(double)image.cols;
-    
-    Mat resizedImage = Mat(image);
-    cv::resize(image, resizedImage, Size(300, 300*aspect));
-    
-    Mat blurImage = Mat(resizedImage);
-    GaussianBlur(resizedImage, blurImage, Size(5,5), 0);
-    
-    Mat grayImage;
-    cvtColor(blurImage, grayImage, CV_BGR2GRAY);
-    
-    Mat mask;
-    threshold(grayImage, mask, 0, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
-    
-    vector<vector<Point>> contours;
-    findContours(mask, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
-    return contours;
-}
-
-Mat RectTester::getMat() {
-    Mat image = imread(imagePath);
-    return getRecognizedMat(image);
-}
-
-cv::Mat RectTester::getRecognizedMat(cv::Mat matToRecognize){
+vector<vector<Point>> RectTester::RecognizeAnswers(cv::Mat matToRecognize){
 //    double aspect = (double)matToRecognize.rows/(double)matToRecognize.cols;
     
 //    Mat resizedImage = Mat(matToRecognize);
@@ -50,20 +20,22 @@ cv::Mat RectTester::getRecognizedMat(cv::Mat matToRecognize){
     
     vector<vector<Point>> contours;
     findContours(mask, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
-    
+    vector<vector<Point>> rectContours;
     for(auto cnt: contours){
         
         vector<Point> approx = vector<Point>();
         double peri = arcLength(cnt, true);
         if(peri < 300 || peri > 800) continue;
         approxPolyDP(cnt, approx, 0.035 * peri, true);
-        if(approx.size() == 4)
+        if(approx.size() == 4){
             drawContours( matToRecognize, vector<vector<Point>>({approx}), 0, cv::Scalar(255, 0, 0), 3, 8, noArray(), 0, cv::Point() );
+            rectContours.push_back(approx);
+        }
     }
-    return matToRecognize;
+    return rectContours;
 }
 
-vector<vector<cv::Point2f>> RectTester::getRecognizedMarkers(cv::Mat matToRecognize){
+vector<vector<cv::Point2f>> RectTester::RecognizeMarkers(cv::Mat matToRecognize){
     
     Mat grayImage;
     cvtColor(matToRecognize, grayImage, CV_BGR2GRAY);

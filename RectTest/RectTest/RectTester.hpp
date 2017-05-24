@@ -13,11 +13,8 @@ using namespace cv;
     
     class RectTester {
     public:
-        RectTester(string);
-        vector<vector<cv::Point>> recognize();
-        cv::Mat getMat();
-        static cv::Mat getRecognizedMat(cv::Mat matToRecognize);
-        static vector<vector<cv::Point2f>> getRecognizedMarkers(cv::Mat matToRecognize);
+        static vector<vector<cv::Point>> RecognizeAnswers(cv::Mat matToRecognize);
+        static vector<vector<cv::Point2f>> RecognizeMarkers(cv::Mat matToRecognize);
         
     private:
         string imagePath;

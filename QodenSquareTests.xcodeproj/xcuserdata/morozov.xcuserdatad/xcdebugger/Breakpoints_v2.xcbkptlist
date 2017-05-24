@@ -10,12 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "RectTest/RectTest/RectTester.cpp"
-            timestampString = "517273352.930136"
+            timestampString = "517324675.786426"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "93"
-            endingLineNumber = "93"
-            landmarkName = "RectTester::getRecognizedMarkers(cv::Mat matToRecognize)"
+            startingLineNumber = "65"
+            endingLineNumber = "65"
+            landmarkName = "RectTester::RecognizeMarkers(cv::Mat matToRecognize)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
