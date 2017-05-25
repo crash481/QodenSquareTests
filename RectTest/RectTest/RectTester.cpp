@@ -24,6 +24,8 @@ vector<vector<Point>> RectTester::RecognizeAnswers(cv::Mat matToRecognize, cv::R
     findContours(mask, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
     vector<vector<Point>> rectContours;
     vector<vector<Point>> filteredContours;
+    vector<int> scratchPercs;
+    
     
     for(auto cnt: contours){
         
@@ -61,6 +63,7 @@ vector<vector<Point>> RectTester::RecognizeAnswers(cv::Mat matToRecognize, cv::R
                 if(rect.contains(addedPoints)){
                     rectContours.erase(rectContours.begin() + addedRectIdx);
                     filteredContours.erase(filteredContours.begin() + addedRectIdx);
+                    scratchPercs.erase(scratchPercs.begin() + addedRectIdx);
                     finish = true;
                     break;
                 }
@@ -70,27 +73,24 @@ vector<vector<Point>> RectTester::RecognizeAnswers(cv::Mat matToRecognize, cv::R
         }
         if(containsAnotherContour) continue;
         
+        //count scratch percents
+        Mat contourMat = grayImage(contourRect);
+        double count_black = 0;
+        double count_white = 0;
+        for( int y = 0; y < contourMat.rows; y++ ) {
+            for( int x = 0; x < contourMat.cols; x++ ) {
+                if ( mask.at<uchar>(y,x) != 0 ) {
+                    if ( contourMat.at<uchar>(y,x) > 155 ) {
+                        count_white++;
+                    } 
+                    else {
+                        count_black++;
+                    } 
+                }
+            }
+        }
+        scratchPercs.push_back(100/(count_white+count_black)*count_white);
 
-        //RECOGNIZE SCRATCH BY COUNTOURS INSIDE
-//        Mat grayContour = matToRecognize(contourRect);
-//        cvtColor(grayContour, grayContour, CV_BGR2GRAY);
-//        Mat contourMask;
-//        threshold(grayContour, contourMask, 0, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
-//        vector<vector<Point>> contoursInCountour;
-//        findContours(contourMask, contoursInCountour, RETR_LIST, CHAIN_APPROX_TC89_KCOS);
-//        
-//        double scratchAreaSum = 0;
-//        for(auto cntInCnt: contoursInCountour){
-//            double scratchArea = contourArea(cntInCnt);
-//            if(scratchArea < 700 ) continue;
-//            scratchAreaSum += scratchArea;
-//        }
-//        
-//        double area = contourArea(cnt);
-//        int scratchPerc = 100 / area * scratchAreaSum;
-//        
-//        putText(matToRecognize, to_string(int(scratchPerc)), Point(approx[3].x, (approx[1].y + approx[3].y)/2), FONT_HERSHEY_SIMPLEX, 1.4 , Scalar(155, 100, 205), 3);
-        
         rectContours.push_back(approx);
         filteredContours.push_back(cnt);
     }
@@ -98,6 +98,13 @@ vector<vector<Point>> RectTester::RecognizeAnswers(cv::Mat matToRecognize, cv::R
     // drow contours
     for(auto cnt: filteredContours){
         drawContours( matToRecognize, vector<vector<Point>>({cnt}), 0, cv::Scalar(255, 0, 0), 3, 8, noArray(), 0, cv::Point() );
+    }
+    
+    //drow percents
+    int idx = 0;
+    for(auto rect: rectContours){
+        putText(matToRecognize, to_string(scratchPercs[idx]), Point(rect[3].x, (rect[1].y + rect[3].y)/2), FONT_HERSHEY_SIMPLEX, 1.4 , Scalar(155, 100, 205), 3);
+        idx++;
     }
 
     return rectContours;
