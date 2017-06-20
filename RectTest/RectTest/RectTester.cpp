@@ -80,7 +80,7 @@ vector<vector<Point>> RectTester::RecognizeAnswers(cv::Mat matToRecognize, cv::R
         for( int y = 0; y < contourMat.rows; y++ ) {
             for( int x = 0; x < contourMat.cols; x++ ) {
                 if ( mask.at<uchar>(y,x) != 0 ) {
-                    if ( contourMat.at<uchar>(y,x) > 155 ) {
+                    if ( contourMat.at<uchar>(y,x) > 185 ) {
                         count_white++;
                     } 
                     else {

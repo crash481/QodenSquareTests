@@ -35,6 +35,10 @@
         
         NSMutableArray *_dataSources = [NSMutableArray new];
         
+#if !TARGET_IPHONE_SIMULATOR
+        [_dataSources addObject:[DeviceVideoDataSource new]];
+#endif
+        
 #ifdef DEBUG
         NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"test_photos"];
 //        NSURL *url = [NSURL fileURLWithPath:[path stringByAppendingPathComponent:@"test.mp4"]];
@@ -45,9 +49,6 @@
         [_dataSources addObject:imagesDS];
 #endif
         
-#if !TARGET_IPHONE_SIMULATOR
-        [_dataSources addObject:[DeviceVideoDataSource new]];
-#endif
         self.dataSources = [_dataSources copy];
         for (id<VideoDataSource> s in _dataSources) {
             s.delegate = self;
