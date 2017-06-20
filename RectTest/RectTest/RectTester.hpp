@@ -10,14 +10,12 @@
 
 using namespace std;
 using namespace cv;
-    
-    class RectTester {
-    public:
-        static vector<vector<cv::Point>> RecognizeAnswers(cv::Mat matToRecognize, cv::Rect2d markerRect);
-        static vector<vector<cv::Point2f>> RecognizeMarkers(cv::Mat matToRecognize);
-        
-    private:
-        string imagePath;
-    };
+
+class RectTester {
+public:
+    vector<int> scratchPercs;
+    vector<vector<cv::Point>> RecognizeAnswers(cv::Mat matToRecognize, cv::Rect2d markerRect);
+    vector<vector<cv::Point2f>> RecognizeMarkers(cv::Mat matToRecognize);
+};
 
 #endif /* RectTester_hpp */

@@ -20,6 +20,7 @@
 
 @implementation ViewController{
     UITapGestureRecognizer *_doubleTap, *_singleTap;
+    RectTester *testRecognizer;
 }
 
 -(instancetype)init{
@@ -32,7 +33,7 @@
         _singleTap.numberOfTapsRequired = 1;
         [_singleTap requireGestureRecognizerToFail:_doubleTap];
 
-        
+        testRecognizer = new RectTester();
         NSMutableArray *_dataSources = [NSMutableArray new];
         
 #if !TARGET_IPHONE_SIMULATOR
@@ -134,10 +135,10 @@
     cv::Mat cv_image((int) height, (int) width, CV_8UC4, pixel, bytesPerRow);
     
     if(!cv_image.empty()){
-        vector<vector<cv::Point2f>> markers = RectTester::RecognizeMarkers(cv_image);
+        vector<vector<cv::Point2f>> markers = testRecognizer->RecognizeMarkers(cv_image);
         if(markers.size() > 0){
             cv::Rect2d markerRect = cv::Rect2d(markers[0][1],markers[0][3]);
-            RectTester::RecognizeAnswers(cv_image, markerRect);
+            testRecognizer->RecognizeAnswers(cv_image, markerRect);
         }
     }
     CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
